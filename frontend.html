@@ -1,0 +1,1648 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AI Chatbot</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f8fafc;
+
+            color: #0f172a;
+
+            height: 100vh;
+
+            overflow: hidden;
+        }
+
+
+        /* =====================================
+           MAIN APP
+        ===================================== */
+
+        .app {
+            display: flex;
+
+            width: 100%;
+
+            height: 100vh;
+        }
+
+
+        /* =====================================
+           SIDEBAR
+        ===================================== */
+
+        .sidebar {
+
+            width: 270px;
+
+            background: #0f172a;
+
+            color: white;
+
+            display: flex;
+
+            flex-direction: column;
+
+            padding: 18px;
+
+            flex-shrink: 0;
+        }
+
+
+        .logo {
+
+            font-size: 22px;
+
+            font-weight: 700;
+
+            margin-bottom: 20px;
+        }
+
+
+        .new-chat {
+
+            width: 100%;
+
+            padding: 12px 15px;
+
+            border: 1px solid #334155;
+
+            background: #1e293b;
+
+            color: white;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+            text-align: left;
+
+            margin-bottom: 20px;
+
+            transition: 0.2s;
+        }
+
+
+        .new-chat:hover {
+
+            background: #2563eb;
+
+            border-color: #2563eb;
+        }
+
+
+        .history-title {
+
+            font-size: 12px;
+
+            color: #94a3b8;
+
+            text-transform: uppercase;
+
+            margin-bottom: 10px;
+        }
+
+
+        .chat-list {
+
+            flex: 1;
+
+            overflow-y: auto;
+        }
+
+
+        .chat-item {
+
+            width: 100%;
+
+            border: none;
+
+            background: transparent;
+
+            color: #cbd5e1;
+
+            padding: 11px 12px;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            text-align: left;
+
+            font-size: 14px;
+
+            margin-bottom: 4px;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+        }
+
+
+        .chat-item:hover {
+
+            background: #1e293b;
+
+            color: white;
+        }
+
+
+        .chat-item.active {
+
+            background: #2563eb;
+
+            color: white;
+        }
+
+
+        /* =====================================
+           CHAT AREA
+        ===================================== */
+
+        .chat-area {
+
+            flex: 1;
+
+            display: flex;
+
+            flex-direction: column;
+
+            min-width: 0;
+
+            background: #ffffff;
+        }
+
+
+        /* =====================================
+           HEADER
+        ===================================== */
+
+        .chat-header {
+
+            height: 64px;
+
+            border-bottom: 1px solid #e2e8f0;
+
+            display: flex;
+
+            align-items: center;
+
+            padding: 0 25px;
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+            background: white;
+        }
+
+
+        /* =====================================
+           MESSAGES
+        ===================================== */
+
+        .messages {
+
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding: 30px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 20px;
+        }
+
+
+        .welcome {
+
+            margin: auto;
+
+            text-align: center;
+
+            max-width: 600px;
+        }
+
+
+        .welcome h1 {
+
+            font-size: 30px;
+
+            margin-bottom: 10px;
+
+            color: #0f172a;
+        }
+
+
+        .welcome p {
+
+            color: #64748b;
+
+            font-size: 15px;
+        }
+
+
+        .message {
+
+            display: flex;
+
+            width: 100%;
+        }
+
+
+        .message-content {
+
+            max-width: 75%;
+
+            padding: 12px 16px;
+
+            border-radius: 12px;
+
+            line-height: 1.6;
+
+            font-size: 15px;
+
+            white-space: pre-wrap;
+
+            word-wrap: break-word;
+        }
+
+
+        /* User */
+
+        .user-message {
+
+            justify-content: flex-end;
+        }
+
+
+        .user-message .message-content {
+
+            background: #2563eb;
+
+            color: white;
+
+            border-bottom-right-radius: 3px;
+        }
+
+
+        /* AI */
+
+        .ai-message {
+
+            justify-content: flex-start;
+        }
+
+
+        .ai-message .message-content {
+
+            background: #f1f5f9;
+
+            color: #0f172a;
+
+            border-bottom-left-radius: 3px;
+        }
+
+
+        /* =====================================
+           INPUT AREA
+        ===================================== */
+
+        .input-area {
+
+            border-top: 1px solid #e2e8f0;
+
+            padding: 18px 25px;
+
+            background: white;
+        }
+
+
+        .input-box {
+
+            max-width: 900px;
+
+            margin: auto;
+
+            display: flex;
+
+            align-items: flex-end;
+
+            gap: 10px;
+
+            border: 1px solid #cbd5e1;
+
+            border-radius: 12px;
+
+            padding: 8px;
+
+            background: white;
+
+            box-shadow:
+                0 2px 8px rgba(15, 23, 42, 0.05);
+        }
+
+
+        .input-box textarea {
+
+            flex: 1;
+
+            resize: none;
+
+            border: none;
+
+            outline: none;
+
+            padding: 10px;
+
+            font-size: 15px;
+
+            font-family: inherit;
+
+            max-height: 150px;
+
+            min-height: 42px;
+        }
+
+
+        .send-button {
+
+            width: 42px;
+
+            height: 42px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #2563eb;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            transition: 0.2s;
+        }
+
+
+        .send-button:hover {
+
+            background: #1d4ed8;
+        }
+
+
+        .send-button:disabled {
+
+            background: #94a3b8;
+
+            cursor: not-allowed;
+        }
+
+
+        .input-info {
+
+            text-align: center;
+
+            margin-top: 8px;
+
+            color: #94a3b8;
+
+            font-size: 11px;
+        }
+
+
+        /* =====================================
+           LOADING
+        ===================================== */
+
+        .typing {
+
+            display: inline-flex;
+
+            gap: 4px;
+
+            padding: 5px;
+        }
+
+
+        .typing span {
+
+            width: 6px;
+
+            height: 6px;
+
+            background: #64748b;
+
+            border-radius: 50%;
+
+            animation: typing 1.2s infinite;
+        }
+
+
+        .typing span:nth-child(2) {
+
+            animation-delay: 0.2s;
+        }
+
+
+        .typing span:nth-child(3) {
+
+            animation-delay: 0.4s;
+        }
+
+
+        @keyframes typing {
+
+            0% {
+                opacity: 0.2;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.2;
+            }
+        }
+
+
+        /* =====================================
+           MOBILE
+        ===================================== */
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+
+                width: 220px;
+            }
+
+
+            .messages {
+
+                padding: 20px 15px;
+            }
+
+
+            .input-area {
+
+                padding: 12px;
+            }
+
+
+            .message-content {
+
+                max-width: 90%;
+            }
+
+        }
+
+
+        @media (max-width: 550px) {
+
+            .sidebar {
+
+                display: none;
+            }
+
+
+            .chat-header {
+
+                padding: 0 15px;
+            }
+
+
+            .welcome h1 {
+
+                font-size: 24px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =====================================
+         SIDEBAR
+    ====================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            AI Chatbot
+        </div>
+
+
+        <button
+            class="new-chat"
+            onclick="createNewChat()"
+        >
+            + New Chat
+        </button>
+
+
+        <div class="history-title">
+            Chat History
+        </div>
+
+
+        <div
+            id="chat-list"
+            class="chat-list"
+        >
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================
+         CHAT AREA
+    ====================================== -->
+
+    <main class="chat-area">
+
+
+        <!-- Header -->
+
+        <header class="chat-header">
+
+            AI Assistant
+
+        </header>
+
+
+
+        <!-- Messages -->
+
+        <section
+            id="messages"
+            class="messages"
+        >
+
+            <div
+                id="welcome"
+                class="welcome"
+            >
+
+                <h1>
+                    How can I help you?
+                </h1>
+
+                <p>
+                    Ask me anything and I will try to help.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Input -->
+
+        <div class="input-area">
+
+            <div class="input-box">
+
+
+                <textarea
+                    id="question"
+                    placeholder="Message AI Assistant..."
+                    rows="1"
+                ></textarea>
+
+
+                <button
+                    id="send-button"
+                    class="send-button"
+                    onclick="sendMessage()"
+                >
+                    ↑
+                </button>
+
+
+            </div>
+
+
+            <div class="input-info">
+
+                AI can make mistakes. Check important information.
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+
+<script>
+
+
+const API_URL = "http://127.0.0.1:8000";
+
+
+// ---------------------------------------------------------
+// Current Chat Thread
+// ---------------------------------------------------------
+
+let currentThreadId =
+    localStorage.getItem("currentThreadId");
+
+
+// ---------------------------------------------------------
+// Create New Chat
+// ---------------------------------------------------------
+
+async function createNewChat() {
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/chat/new`,
+            {
+                method: "POST"
+            }
+        );
+
+
+        if (!response.ok) {
+
+            console.error(
+                "Create chat error:",
+                response.status
+            );
+
+            return null;
+        }
+
+
+        const data = await response.json();
+
+
+        currentThreadId = data.thread_id;
+
+
+        // Save current thread in browser
+
+        localStorage.setItem(
+            "currentThreadId",
+            currentThreadId
+        );
+
+
+        console.log(
+            "New thread:",
+            currentThreadId
+        );
+
+
+        // Clear messages
+
+        const messages =
+            document.getElementById("messages");
+
+        messages.innerHTML = "";
+
+
+        showWelcomeMessage();
+
+
+        // Reload sidebar
+
+        await loadChats();
+
+
+        // Focus input
+
+        document
+            .getElementById("question")
+            .focus();
+
+
+        return currentThreadId;
+
+
+    } catch (error) {
+
+        console.error(
+            "Create chat failed:",
+            error
+        );
+
+        return null;
+    }
+}
+
+
+// ---------------------------------------------------------
+// Welcome Message
+// ---------------------------------------------------------
+
+function showWelcomeMessage() {
+
+    const messages =
+        document.getElementById("messages");
+
+
+    messages.innerHTML = `
+        <div id="welcome" class="welcome">
+
+            <h1>How can I help you?</h1>
+
+            <p>
+                Ask me anything and I will try to help.
+            </p>
+
+        </div>
+    `;
+}
+
+
+// ---------------------------------------------------------
+// Load All Chats
+// ---------------------------------------------------------
+
+async function loadChats() {
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/chat/threads`
+        );
+
+
+        if (!response.ok) {
+
+            console.error(
+                "History error:",
+                response.status
+            );
+
+            return;
+        }
+
+
+        const chats =
+            await response.json();
+
+
+        console.log(
+            "Chat threads:",
+            chats
+        );
+
+
+        const chatList =
+            document.getElementById("chat-list");
+
+
+        chatList.innerHTML = "";
+
+
+        chats.forEach(chat => {
+
+            const button =
+                document.createElement("button");
+
+
+            button.className =
+                "chat-item";
+
+
+            button.dataset.threadId =
+                chat.id;
+
+
+            // Active chat
+
+            if (
+                chat.id === currentThreadId
+            ) {
+
+                button.classList.add(
+                    "active"
+                );
+            }
+
+
+            button.textContent =
+                chat.title;
+
+
+            button.onclick = function () {
+
+                selectChat(
+                    chat.id
+                );
+
+            };
+
+
+            chatList.appendChild(
+                button
+            );
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Load history failed:",
+            error
+        );
+    }
+}
+
+
+// ---------------------------------------------------------
+// Select Existing Chat
+// ---------------------------------------------------------
+
+async function selectChat(
+    threadId
+) {
+
+    try {
+
+        currentThreadId =
+            threadId;
+
+
+        // Save selected chat
+
+        localStorage.setItem(
+            "currentThreadId",
+            currentThreadId
+        );
+
+
+        console.log(
+            "Selected thread:",
+            currentThreadId
+        );
+
+
+        const messages =
+            document.getElementById("messages");
+
+
+        // Loading message
+
+        messages.innerHTML = `
+            <div class="message ai-message">
+
+                <div class="message-content">
+
+                    Loading conversation...
+
+                </div>
+
+            </div>
+        `;
+
+
+        const response = await fetch(
+
+            `${API_URL}/chat/${threadId}/messages`
+
+        );
+
+
+        if (!response.ok) {
+
+            console.error(
+                "Failed to load messages:",
+                response.status
+            );
+
+
+            showWelcomeMessage();
+
+            return;
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Previous messages:",
+            data.messages
+        );
+
+
+        // Clear loading message
+
+        messages.innerHTML = "";
+
+
+        // No messages
+
+        if (
+            !data.messages ||
+            data.messages.length === 0
+        ) {
+
+            showWelcomeMessage();
+
+        }
+
+
+        // Display previous messages
+
+        if (data.messages) {
+
+            data.messages.forEach(
+                message => {
+
+                    if (
+                        message.type === "human"
+                    ) {
+
+                        addUserMessage(
+                            message.content
+                        );
+
+                    }
+
+                    else if (
+                        message.type === "ai"
+                    ) {
+
+                        addAIMessage(
+                            message.content
+                        );
+
+                    }
+
+                }
+            );
+        }
+
+
+        // Update active sidebar
+
+        updateActiveChat();
+
+
+        scrollToBottom();
+
+
+    } catch (error) {
+
+        console.error(
+            "Loading chat failed:",
+            error
+        );
+
+
+        showWelcomeMessage();
+    }
+}
+
+
+// ---------------------------------------------------------
+// Update Active Chat
+// ---------------------------------------------------------
+
+function updateActiveChat() {
+
+    const chatItems =
+        document.querySelectorAll(
+            ".chat-item"
+        );
+
+
+    chatItems.forEach(item => {
+
+        item.classList.remove(
+            "active"
+        );
+
+
+        if (
+            item.dataset.threadId ===
+            currentThreadId
+        ) {
+
+            item.classList.add(
+                "active"
+            );
+
+        }
+
+    });
+}
+
+
+// ---------------------------------------------------------
+// Send Message
+// ---------------------------------------------------------
+
+async function sendMessage() {
+
+    const input =
+        document.getElementById(
+            "question"
+        );
+
+
+    const question =
+        input.value.trim();
+
+
+    // Don't send empty message
+
+    if (!question) {
+
+        return;
+    }
+
+
+    // -----------------------------------------------------
+    // Create chat automatically
+    // -----------------------------------------------------
+
+    if (!currentThreadId) {
+
+        const newThread =
+            await createNewChat();
+
+
+        if (!newThread) {
+
+            return;
+        }
+    }
+
+
+    // -----------------------------------------------------
+    // Remove welcome message
+    // -----------------------------------------------------
+
+    const welcome =
+        document.getElementById(
+            "welcome"
+        );
+
+
+    if (welcome) {
+
+        welcome.remove();
+    }
+
+
+    // -----------------------------------------------------
+    // Add User Message
+    // -----------------------------------------------------
+
+    addUserMessage(
+        question
+    );
+
+
+    // Clear input
+
+    input.value = "";
+
+
+    // -----------------------------------------------------
+    // Create AI Message Container
+    // -----------------------------------------------------
+
+    const messages =
+        document.getElementById(
+            "messages"
+        );
+
+
+    const aiMessage =
+        document.createElement(
+            "div"
+        );
+
+
+    aiMessage.className =
+        "message ai-message";
+
+
+    const aiContent =
+        document.createElement(
+            "div"
+        );
+
+
+    aiContent.className =
+        "message-content";
+
+
+    // Typing animation
+
+    aiContent.innerHTML = `
+        <div class="typing">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </div>
+    `;
+
+
+    aiMessage.appendChild(
+        aiContent
+    );
+
+
+    messages.appendChild(
+        aiMessage
+    );
+
+
+    scrollToBottom();
+
+
+    // -----------------------------------------------------
+    // Disable Send Button
+    // -----------------------------------------------------
+
+    const sendButton =
+        document.getElementById(
+            "send-button"
+        );
+
+
+    sendButton.disabled = true;
+
+
+    try {
+
+        // -------------------------------------------------
+        // Send request to FastAPI
+        // -------------------------------------------------
+
+        const response = await fetch(
+
+            `${API_URL}/chatbot`,
+
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/x-www-form-urlencoded"
+
+                },
+
+                body:
+                    new URLSearchParams({
+
+                        question:
+                            question,
+
+                        thread_id:
+                            currentThreadId
+
+                    })
+
+            }
+
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
+
+
+        // Remove typing animation
+
+        aiContent.innerHTML = "";
+
+
+        // -------------------------------------------------
+        // Read streaming response
+        // -------------------------------------------------
+
+        const reader =
+            response.body.getReader();
+
+
+        const decoder =
+            new TextDecoder();
+
+
+        let aiResponse = "";
+
+
+        while (true) {
+
+            const {
+                value,
+                done
+            } = await reader.read();
+
+
+            if (done) {
+
+                break;
+            }
+
+
+            const text =
+                decoder.decode(
+                    value,
+                    {
+                        stream: true
+                    }
+                );
+
+
+            aiResponse += text;
+
+
+            aiContent.textContent =
+                aiResponse;
+
+
+            scrollToBottom();
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Chat error:",
+            error
+        );
+
+
+        aiContent.textContent =
+            "Unable to connect to the AI server.";
+
+
+    } finally {
+
+        // Enable button
+
+        sendButton.disabled =
+            false;
+
+
+        // Focus input
+
+        input.focus();
+
+    }
+}
+
+
+// ---------------------------------------------------------
+// Add User Message
+// ---------------------------------------------------------
+
+function addUserMessage(
+    message
+) {
+
+    const messages =
+        document.getElementById(
+            "messages"
+        );
+
+
+    const userMessage =
+        document.createElement(
+            "div"
+        );
+
+
+    userMessage.className =
+        "message user-message";
+
+
+    const content =
+        document.createElement(
+            "div"
+        );
+
+
+    content.className =
+        "message-content";
+
+
+    content.textContent =
+        message;
+
+
+    userMessage.appendChild(
+        content
+    );
+
+
+    messages.appendChild(
+        userMessage
+    );
+
+
+    scrollToBottom();
+}
+
+
+// ---------------------------------------------------------
+// Add AI Message
+// ---------------------------------------------------------
+
+function addAIMessage(
+    message
+) {
+
+    const messages =
+        document.getElementById(
+            "messages"
+        );
+
+
+    const aiMessage =
+        document.createElement(
+            "div"
+        );
+
+
+    aiMessage.className =
+        "message ai-message";
+
+
+    const content =
+        document.createElement(
+            "div"
+        );
+
+
+    content.className =
+        "message-content";
+
+
+    // Handle string response
+
+    if (
+        typeof message === "string"
+    ) {
+
+        content.textContent =
+            message;
+
+    }
+
+    else {
+
+        content.textContent =
+            JSON.stringify(
+                message
+            );
+
+    }
+
+
+    aiMessage.appendChild(
+        content
+    );
+
+
+    messages.appendChild(
+        aiMessage
+    );
+
+
+    scrollToBottom();
+}
+
+
+// ---------------------------------------------------------
+// Scroll Messages to Bottom
+// ---------------------------------------------------------
+
+function scrollToBottom() {
+
+    const messages =
+        document.getElementById(
+            "messages"
+        );
+
+
+    if (!messages) {
+
+        return;
+    }
+
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+
+
+// ---------------------------------------------------------
+// Escape HTML
+// ---------------------------------------------------------
+
+function escapeHTML(
+    text
+) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        text;
+
+
+    return div.innerHTML;
+}
+
+
+// ---------------------------------------------------------
+// Enter Key
+// ---------------------------------------------------------
+
+const questionInput =
+    document.getElementById(
+        "question"
+    );
+
+
+if (questionInput) {
+
+    questionInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            // Enter → Send
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
+        }
+    );
+}
+
+
+// ---------------------------------------------------------
+// Page Loaded
+// ---------------------------------------------------------
+
+window.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        // Load sidebar
+
+        await loadChats();
+
+
+        // Get saved thread
+
+        const savedThreadId =
+            localStorage.getItem(
+                "currentThreadId"
+            );
+
+
+        if (savedThreadId) {
+
+            // Check if saved chat still exists
+
+            const chatItems =
+                document.querySelectorAll(
+                    ".chat-item"
+                );
+
+
+            let chatExists = false;
+
+
+            chatItems.forEach(item => {
+
+                if (
+                    item.dataset.threadId ===
+                    savedThreadId
+                ) {
+
+                    chatExists = true;
+
+                }
+
+            });
+
+
+            if (chatExists) {
+
+                await selectChat(
+                    savedThreadId
+                );
+
+            }
+
+            else {
+
+                // Saved chat doesn't exist
+
+                localStorage.removeItem(
+                    "currentThreadId"
+                );
+
+
+                currentThreadId =
+                    null;
+
+
+                showWelcomeMessage();
+
+            }
+
+        }
+
+        else {
+
+            showWelcomeMessage();
+
+        }
+
+    }
+);
+
+
+
+
+</script>
+
+
+</body>
+
+</html>
+
