@@ -9,16 +9,9 @@ import sqlite3
 import uuid
 
 
-# ---------------------------------------------------------
-# FastAPI Application
-# ---------------------------------------------------------
 
 app = FastAPI()
 
-
-# ---------------------------------------------------------
-# CORS
-# ---------------------------------------------------------
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,9 +22,7 @@ app.add_middleware(
 )
 
 
-# ---------------------------------------------------------
-# SQLite Database
-# ---------------------------------------------------------
+# SQQLite Database
 
 conn = sqlite3.connect(
     "Chatbot.db",
@@ -41,7 +32,7 @@ conn = sqlite3.connect(
 cursor = conn.cursor()
 
 
-# Create table for chat threads
+# Here  Create table for chat threads
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS chat_threads (
@@ -54,10 +45,7 @@ CREATE TABLE IF NOT EXISTS chat_threads (
 conn.commit()
 
 
-# ---------------------------------------------------------
-# Home
-# ---------------------------------------------------------
-
+# Home 
 @app.get("/")
 async def home_view():
 
@@ -66,9 +54,7 @@ async def home_view():
     }
 
 
-# ---------------------------------------------------------
-# Create New Chat
-# ---------------------------------------------------------
+# Create new Chat
 
 @app.post("/chat/new")
 async def create_chat(
@@ -77,7 +63,7 @@ async def create_chat(
 
     thread_id = str(uuid.uuid4())
 
-
+      ### Insert the title and id and title in chat_threads
     cursor.execute(
         """
         INSERT INTO chat_threads (id, title)
@@ -99,7 +85,6 @@ async def create_chat(
     }
 
 
-# ---------------------------------------------------------
 # Get All Chat Threads
 
 @app.get("/chat/threads")
@@ -125,9 +110,8 @@ async def get_threads():
     ]
 
 
-# ---------------------------------------------------------
+
 # Get Previous Messages
-# ---------------------------------------------------------
 
 @app.get("/chat/{thread_id}/messages")
 async def get_chat_messages(
@@ -180,9 +164,9 @@ async def get_chat_messages(
     }
 
 
-# ---------------------------------------------------------
+
 # Chatbot
-# ---------------------------------------------------------
+
 
 @app.post("/chatbot")
 async def chatbot_views(
